@@ -27,7 +27,8 @@ import { OggDemuxer } from './ogg/ogg-demuxer';
 import { WaveDemuxer } from './wave/wave-demuxer';
 import { MAX_FRAME_HEADER_SIZE, MIN_FRAME_HEADER_SIZE, readFrameHeader } from './adts/adts-reader';
 import { AdtsDemuxer } from './adts/adts-demuxer';
-import { readAscii } from './reader';
+import { readAscii, readBytes } from './reader';
+import { MxfDemuxer } from './mxf/mxf-demuxer';
 
 /**
  * Base class representing an input media file format.
@@ -118,9 +119,42 @@ export class QuickTimeInputFormat extends IsobmffInputFormat {
 		return 'QuickTime File Format';
 	}
 
-	get mimeType() {
-		return 'video/quicktime';
-	}
+        get mimeType() {
+                return 'video/quicktime';
+        }
+}
+
+/**
+ * Material eXchange Format (MXF).
+ *
+ * Do not instantiate this class; use the {@link MXF} singleton instead.
+ *
+ * @group Input formats
+ * @public
+ */
+export class MxfInputFormat extends InputFormat {
+        /** @internal */
+        async _canReadInput(input: Input) {
+                let slice = input._reader.requestSlice(0, 16);
+                if (slice instanceof Promise) slice = await slice;
+                if (!slice) return false;
+
+                const prefix = readBytes(slice, 4);
+                return prefix[0] === 0x06 && prefix[1] === 0x0E && prefix[2] === 0x2B && prefix[3] === 0x34;
+        }
+
+        /** @internal */
+        _createDemuxer(input: Input) {
+                return new MxfDemuxer(input);
+        }
+
+        get name() {
+                return 'Material eXchange Format';
+        }
+
+        get mimeType() {
+                return 'application/mxf';
+        }
 }
 
 /**
@@ -456,6 +490,12 @@ export const MP4 = new Mp4InputFormat();
  */
 export const QTFF = new QuickTimeInputFormat();
 /**
+ * Material eXchange Format input format singleton.
+ * @group Input formats
+ * @public
+ */
+export const MXF = new MxfInputFormat();
+/**
  * Matroska input format singleton.
  * @group Input formats
  * @public
@@ -498,4 +538,4 @@ export const ADTS = new AdtsInputFormat();
  * @group Input formats
  * @public
  */
-export const ALL_FORMATS: InputFormat[] = [MP4, QTFF, MATROSKA, WEBM, WAVE, OGG, MP3, ADTS];
+export const ALL_FORMATS: InputFormat[] = [MP4, QTFF, MXF, MATROSKA, WEBM, WAVE, OGG, MP3, ADTS];
