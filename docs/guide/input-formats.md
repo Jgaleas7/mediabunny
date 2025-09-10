@@ -23,13 +23,14 @@ If you want a file's full MIME type, which depends on track codecs, use [`getMim
 Since input formats don't require any additional configuration, each input format is directly available as an exported singleton instance:
 ```ts
 import {
-	MP4, // MP4 input format singleton
-	QTFF, // QuickTime File Format input format singleton
-	MATROSKA, // Matroska input format singleton
-	WEBM, // WebM input format singleton
-	MP3, // MP3 input format singleton
-	WAVE, // WAVE input format singleton
-	OGG, // Ogg input format singleton
+        MP4, // MP4 input format singleton
+        QTFF, // QuickTime File Format input format singleton
+        MXF, // Material eXchange Format input format singleton
+        MATROSKA, // Matroska input format singleton
+        WEBM, // WebM input format singleton
+        MP3, // MP3 input format singleton
+        WAVE, // WAVE input format singleton
+        OGG, // Ogg input format singleton
 } from 'mediabunny';
 ```
 
@@ -68,14 +69,15 @@ Using `ALL_FORMATS` means [demuxers](https://en.wikipedia.org/wiki/Demultiplexer
 
 In addition to singletons, input format classes are structured hierarchically:
 - `InputFormat` (abstract)
-	- `IsobmffInputFormat` (abstract)
-		- `Mp4InputFormat`
-		- `QuickTimeInputFormat`
-	- `MatroskaInputFormat`
-		- `WebMInputFormat`
-	- `Mp3InputFormat`
-	- `WaveInputFormat`
-	- `OggInputFormat`
+        - `IsobmffInputFormat` (abstract)
+                - `Mp4InputFormat`
+                - `QuickTimeInputFormat`
+        - `MatroskaInputFormat`
+                - `WebMInputFormat`
+        - `Mp3InputFormat`
+        - `WaveInputFormat`
+        - `OggInputFormat`
+        - `MxfInputFormat`
 
 This means you can also perform input format checks using `instanceof` instead of `===` comparisons. For example:
 ```ts
